@@ -5,7 +5,14 @@ import { useNavigate } from "react-router-dom";
 import { useAppContext } from "../context/AppContext";
 
 const Login = () => {
-  const { signInStart, signInSuccess, signInFailure } = useAppContext();
+  const {
+    signInStart,
+    signInSuccess,
+    signInFailure,
+    currentUser,
+    error,
+    loading,
+  } = useAppContext();
   const [formData, setFormData] = useState({});
   const navigate = useNavigate();
   const handleChange = (e) => {
@@ -16,6 +23,7 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      signInStart();
       const response = await fetch("/api/auth/login", {
         method: "POST",
         headers: {
@@ -27,18 +35,20 @@ const Login = () => {
       const data = await response.json();
 
       if (!response.ok) {
-        // Show backend error message if available
-        throw new Error(data.message || "Network response was not ok");
+        toast.error(data.message || "Network response was not ok");
+        signInFailure(data.message);
       }
       console.log("Login successful:", data);
       toast.success("Login successful!");
+      signInSuccess(data);
       navigate("/");
     } catch (error) {
       toast.error(error.message || "Login failed. Please try again.");
-      console.log("Error during login:", error.message);
+      signInFailure(error.message);
     }
   };
 
+  currentUser && console.log(currentUser);
   return (
     <div className="flex items-center justify-center min-h-screen">
       <div className="bg-white p-8 rounded-lg shadow-md w-96">

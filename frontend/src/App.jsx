@@ -12,12 +12,14 @@ function App() {
   return (
     <>
       <Header />
-      <Routes>
+     <div className="container">
+       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/profile" element={<Profile />} />
       </Routes>
+     </div>
     </>
   )
 }
