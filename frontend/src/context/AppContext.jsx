@@ -30,11 +30,21 @@ export const AppProvider = ({ children }) => {
     setError(errorMessage);
     setLoading(false);
   };
+  const handleSignOut = () => {
+    setLoading(false);
+    setError(null);
+    setCurrentUser(null);
+    localStorage.removeItem("current_user_data");
+  };
 
   const value = {
     currentUser,
     error,
+    setError,
+    setCurrentUser,
     loading,
+    setLoading,
+    handleSignOut,
     signInStart,
     signInSuccess,
     signInFailure,

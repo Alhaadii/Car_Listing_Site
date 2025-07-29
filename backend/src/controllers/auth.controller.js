@@ -84,9 +84,10 @@ export const loginUser = async (req, res) => {
           success: true,
           message: "Login successful",
           user: {
-            id: user._id,
+            _id: user._id,
             username: user.username,
             email: user.email,
+            avatar: user.avatar,
           },
         });
     })
@@ -97,33 +98,6 @@ export const loginUser = async (req, res) => {
         error,
       });
     });
-};
-
-export const getUserProfile = async (req, res) => {
-  const { id } = req.params;
-  try {
-    const user = await User.findById(id, "-password");
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found",
-      });
-    }
-    res.status(200).json({
-      success: true,
-      user: {
-        id: user._id,
-        username: user.username,
-        email: user.email,
-      },
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Error fetching user profile",
-      error,
-    });
-  }
 };
 
 export const getAllUsers = async (req, res) => {
@@ -140,4 +114,70 @@ export const getAllUsers = async (req, res) => {
       error,
     });
   }
+};
+
+export const google = async (req, res) => {
+  try {
+    const user = await User.findOne({ email: req.body.email });
+    if (user) {
+      const token = jwt.sign(
+        { id: user._id, username: user.username, email: user.email },
+        process.env.JWT_SECRET
+      );
+      const { password, ...userData } = user._doc;
+      res
+        .cookie("token", token, {
+          httpOnly: true,
+        })
+        .status(200)
+        .json({
+          success: true,
+          message: "Google login successful",
+          user: userData,
+        });
+    } else {
+      const generatedPassword =
+        Math.random().toString(36).slice(-8) +
+        Math.random().toString(36).slice(-8);
+      const hashedPassword = bcrypt.hashSync(generatedPassword, 10);
+      const generatedUsername =
+        req.body.name.split(" ").join("").toLowerCase() +
+        Math.random().toString(36).slice(-5);
+      const newUser = new User({
+        email: req.body.email,
+        username: generatedUsername,
+        password: hashedPassword,
+        avatar: req.body.photoURL,
+      });
+      await newUser.save();
+    }
+    const token = jwt.sign(
+      { id: newUser._id, username: newUser.username, email: newUser.email },
+      process.env.JWT_SECRET
+    );
+    const { password, ...userData } = newUser._doc;
+    res
+      .cookie("token", token, {
+        httpOnly: true,
+      })
+      .status(200)
+      .json({
+        success: true,
+        message: "Google login successful",
+        user: userData,
+      });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error during Google authentication",
+      error: error.message,
+    });
+  }
+};
+
+export const logoutUser = (req, res) => {
+  res
+    .clearCookie("token")
+    .status(200)
+    .json({ success: true, message: "Logout successful" });
 };

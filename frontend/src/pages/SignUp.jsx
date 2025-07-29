@@ -2,6 +2,7 @@ import React from "react";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import Oauth from "../components/Oauth";
 
 const SignUp = () => {
   const [formData, setFormData] = useState({});
@@ -14,6 +15,10 @@ const SignUp = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      if (!formData.username || !formData.email || !formData.password) {
+        toast.error("All fields are required.");
+        return;
+      }
       const response = await fetch("/api/auth/signup", {
         method: "POST",
         headers: {
@@ -31,7 +36,7 @@ const SignUp = () => {
 
       console.log("Sign up successful:", data);
       toast.success("Sign up successful!");
-      navigate("/login"); 
+      navigate("/login");
     } catch (error) {
       toast.error(error.message || "Sign up failed. Please try again.");
       console.log("Error during sign up:", error.message);
@@ -39,7 +44,7 @@ const SignUp = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen">
+    <div className="flex items-center justify-center mt-4">
       <div className="bg-white p-8 rounded-lg shadow-md w-96">
         <h2 className="text-2xl font-bold mb-6 text-center bg-gradient-to-r from-blue-500 to-purple-500 text-transparent bg-clip-text">
           Sign Up
@@ -85,6 +90,7 @@ const SignUp = () => {
           >
             Sign Up
           </button>
+          <Oauth />
         </form>
         <p className="mt-4 text-sm text-center text-gray-600">
           Already have an account?{" "}

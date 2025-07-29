@@ -3,16 +3,10 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { useAppContext } from "../context/AppContext";
+import Oauth from "../components/Oauth";
 
 const Login = () => {
-  const {
-    signInStart,
-    signInSuccess,
-    signInFailure,
-    currentUser,
-    error,
-    loading,
-  } = useAppContext();
+  const { signInStart, signInSuccess, signInFailure } = useAppContext();
   const [formData, setFormData] = useState({});
   const navigate = useNavigate();
   const handleChange = (e) => {
@@ -23,6 +17,10 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      if (!formData.email || !formData.password) {
+        toast.error("Email and password are required.");
+        return;
+      }
       signInStart();
       const response = await fetch("/api/auth/login", {
         method: "POST",
@@ -37,8 +35,8 @@ const Login = () => {
       if (!response.ok) {
         toast.error(data.message || "Network response was not ok");
         signInFailure(data.message);
+        return;
       }
-      console.log("Login successful:", data);
       toast.success("Login successful!");
       signInSuccess(data);
       navigate("/");
@@ -48,9 +46,8 @@ const Login = () => {
     }
   };
 
-  currentUser && console.log(currentUser);
   return (
-    <div className="flex items-center justify-center min-h-screen">
+    <div className="flex items-center justify-center mt-4">
       <div className="bg-white p-8 rounded-lg shadow-md w-96">
         <h2 className="text-2xl font-bold mb-6 text-center bg-gradient-to-r from-blue-500 to-purple-500 text-transparent bg-clip-text">
           Login
@@ -95,7 +92,14 @@ const Login = () => {
           >
             Login
           </button>
+          <Oauth />
         </form>
+        <p className="mt-4 text-center text-gray-600">
+          Don't have an account?{" "}
+          <a href="/signup" className="text-blue-500 hover:underline">
+            Register
+          </a>
+        </p>
       </div>
     </div>
   );
