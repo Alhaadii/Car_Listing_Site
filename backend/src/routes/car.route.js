@@ -1,5 +1,12 @@
 import { Router } from "express";
-import { createCarList } from "../controllers/car.controller.js";
+import {
+  createCarList,
+  deleteCar,
+  getCarList,
+  getSingleCar,
+  UpdateCar,
+} from "../controllers/car.controller.js";
+import { verifyToken } from "../utils/verifyToken.js";
 const router = new Router();
 
 router.get("/", (req, res) => {
@@ -7,6 +14,9 @@ router.get("/", (req, res) => {
     Message: "welcome",
   });
 });
-router.post("/create", createCarList)
-
+router.post("/create", createCarList);
+router.get("/list/:id", verifyToken, getCarList);
+router.get("/:id", verifyToken, getSingleCar);
+router.delete("/delete/:id", verifyToken, deleteCar);
+router.put("/update/:id",verifyToken, UpdateCar)
 export default router;

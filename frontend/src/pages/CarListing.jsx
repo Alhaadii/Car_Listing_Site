@@ -15,7 +15,7 @@ const CarListing = () => {
     name: "",
     make: "",
     model: "",
-    year: 0,
+    year: 2002,
     price: 0,
     description: "",
     discount: 0,
@@ -177,7 +177,9 @@ const CarListing = () => {
         throw new Error("Failed to create car listing.");
       }
       toast.success("Car listing created successfully!");
-      clearAll();
+      setTimeout(() => {
+        clearAll();
+      }, 1000);
     } catch (error) {
       toast.error(error.message);
       setError(error.message);
@@ -414,25 +416,27 @@ const CarListing = () => {
             />
             <div className=" flex w-full items-center  border border-gray-300 rounded-md p-2">
               <p>Regular Price</p>
-              <span>/Month</span>
+              {carDetails.type === "Rent" ? <span>($/Month)</span> : ""}
             </div>
           </div>
           {/* Discount */}
-          <div className="mb-4  bg-white flex space-x-2">
-            <input
-              type="number"
-              name="discount"
-              id="discount"
-              onChange={handleChange}
-              defaultValue={carDetails.discount}
-              className="border border-gray-300 rounded-md p-2 w-full"
-              placeholder="Discount. e.g., 20000"
-            />
-            <div className=" flex w-full items-center  border border-gray-300 rounded-md p-2">
-              <p>Discount Price</p>
-              <span>/Month</span>
+          {carDetails.offer && (
+            <div className="mb-4  bg-white flex space-x-2">
+              <input
+                type="number"
+                name="discount"
+                id="discount"
+                onChange={handleChange}
+                defaultValue={carDetails.discount}
+                className="border border-gray-300 rounded-md p-2 w-full"
+                placeholder="Discount. e.g., 20000"
+              />
+              <div className=" flex w-full items-center  border border-gray-300 rounded-md p-2">
+                <p>Discount Price</p>
+                {carDetails.type === "Rent" ? <span>($/Month)</span> : ""}
+              </div>
             </div>
-          </div>
+          )}
         </div>
         {/* Right Side Form */}
         <div className="flex-1">

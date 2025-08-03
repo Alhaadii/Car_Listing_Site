@@ -35,3 +35,132 @@ export const createCarList = async (req, res) => {
     });
   }
 };
+
+//getCarBy the id of the currentyUser from verifyToken
+export const getCarList = async (req, res) => {
+  const userId = req.params.id;
+  if (req.user.id !== userId) {
+    return res.status(403).json({
+      status: false,
+      message: "You are not authorized to view this car listing",
+    });
+  }
+  try {
+    const car = await Car.find({ seller: userId });
+    if (!car) {
+      return res.status(404).json({
+        status: false,
+        message: "Car listing not found",
+      });
+    }
+    res.status(200).json({
+      status: true,
+      message: "Car listing fetched successfully",
+      car,
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: false,
+      message: "Error fetching car listing",
+      error: error.message,
+    });
+  }
+};
+
+export const getSingleCar = async (req, res) => {
+  if (!req.user.id) {
+    return res.status(404).json({
+      status: false,
+      message: "Error User is not authorized",
+    });
+  }
+  try {
+    const carDetails = await Car.findById(req.params.id);
+
+    if (!carDetails) {
+      return res.status(404).json({
+        status: false,
+        message: "Car not found",
+      });
+    }
+
+    res.status(200).json({
+      status: true,
+      message: "Fetched successfully",
+      car: carDetails,
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: false,
+      message: "Error fetching car listing by id",
+      error: error.message,
+    });
+  }
+};
+
+export const deleteCar = async (req, res) => {
+  if (!req.user.id) {
+    return res.status(404).json({
+      status: false,
+      message: "Error User is not authorized",
+    });
+  }
+  try {
+    const carDetails = await Car.findByIdAndDelete(req.params.id);
+    res.status(200).json({
+      status: true,
+      message: "Deleted successfully",
+      car: carDetails,
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: false,
+      message: "Error Deleting car by id",
+      error: error.message,
+    });
+  }
+};
+
+export const UpdateCar = async (req, res) => {
+  if (!req.user?.id) {
+    return res.status(401).json({
+      status: false,
+      message: "User is not authorized",
+    });
+  }
+
+  try {
+    // Optional: Check ownership of the car before updating
+    const car = await Car.findById(req.params.id);
+    if (!car) {
+      return res.status(404).json({
+        status: false,
+        message: "Car not found",
+      });
+    }
+
+    // Optional: Check if the car belongs to the user
+    if (car.seller.toString() !== req.user.id) {
+      return res.status(403).json({
+        status: false,
+        message: "You are not allowed to update this car",
+      });
+    }
+
+    const carDetails = await Car.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+    });
+
+    res.status(200).json({
+      status: true,
+      message: "Updated successfully",
+      car: carDetails,
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: false,
+      message: "Error updating car by ID",
+      error: error.message,
+    });
+  }
+};

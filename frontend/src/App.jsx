@@ -7,6 +7,8 @@ import Profile from "./pages/Profile";
 import { Route, Routes } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
 import CarListing from "./pages/CarListing";
+import CarDetails from "./pages/CarDetails";
+import ContactOwner from "./pages/ContactOwner";
 
 function App() {
   return (
@@ -17,9 +19,11 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
+          <Route path="/owner-contact" element={<ContactOwner />} />
           <Route element={<ProtectedRoute />}>
             <Route path="/profile" element={<Profile />} />
             <Route path="/cars" element={<CarListing />} />
+            <Route path="/car_details/:carId" element={<CarDetails />} />
           </Route>
         </Routes>
       </div>

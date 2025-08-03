@@ -2,14 +2,10 @@ import React from "react";
 import { FaSearch } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { useAppContext } from "../context/AppContext";
+
 const Header = () => {
   const { currentUser, handleLogout } = useAppContext();
   const { user } = currentUser || {};
-
-
-
-
-
 
   return (
     <div className=" bg-slate-200 text-slate-700 p-4  shadow-lg">
@@ -35,6 +31,9 @@ const Header = () => {
             </li>
             {currentUser ? (
               <>
+                <li className="hidden sm:inline">
+                  <Link to="/cars">AddNewCar</Link>
+                </li>
                 <li>
                   <Link to="/profile">
                     {" "}
