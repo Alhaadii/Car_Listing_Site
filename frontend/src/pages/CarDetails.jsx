@@ -5,10 +5,13 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import SwiperCore from "swiper";
 import { Navigation } from "swiper/modules";
 import "swiper/css/bundle";
+import { useAppContext } from "../context/AppContext";
 
 SwiperCore.use([Navigation]);
 
 const CarDetails = () => {
+  const { currentUser } = useAppContext();
+  const { user } = currentUser;
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [carDetails, setCarDetails] = useState(null);
@@ -110,14 +113,18 @@ const CarDetails = () => {
           >
             Delete Car
           </button>
-          <Link to={"/owner-contact"}>
-            <button className="bg-green-600 p-2 ml-4 float-end text-white rounded-sm cursor-pointer">
-              Contact The Owner
-            </button>
-          </Link>
+          {carDetails.seller !== user._id ? (
+            <Link to={`/owner-contact/${carDetails.seller}`}>
+              <button className="bg-green-600 p-2 ml-4 float-end text-white rounded-sm cursor-pointer">
+                Contact The Owner
+              </button>
+            </Link>
+          ) : (
+            ""
+          )}
         </>
       ) : (
-        <p className="text-center text-gray-500">No car found.</p>
+        <p className="text-center text-4xl">No car found.</p>
       )}
     </div>
   );

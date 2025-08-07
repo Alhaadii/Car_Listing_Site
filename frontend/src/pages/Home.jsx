@@ -58,7 +58,7 @@ const Home = () => {
     <div className="max-w-6xl mx-auto mt-4">
       <h1 className="text-center text-2xl uppercase font-bold">Car Lists</h1>
       {/* Showing errors and Loadings */}
-      <div className="text-center">
+      <div className="flex justify-center items-center w-full  mx-2">
         {error && (
           <div className="text-red-500 text-center text-4xl bg-amber-200">
             {error}
@@ -66,40 +66,51 @@ const Home = () => {
         )}
         {loading && <HashLoader color="#1bb310" speedMultiplier={1} />}
       </div>
-      <div className="grid lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 justify-center items-center gap-4">
+      <div>
         {/* CarList */}
-        {carList &&
-          carList?.map((car, index) => {
-            return (
-              <div
-                key={index}
-                className="w-full shadow-lg rounded-xl bg-gray-100 space-x-2 p-4 hover:bg-gray-600 cursor-pointer"
-              >
-                <Link to={`/car_details/${car._id}`}>
-                  {" "}
-                  <img className="h-52 w-full" src={car?.images[0]} alt="" />
-                </Link>
-                <h1 className=" ml-2 mx-2 font-bold text-green-700 flex justify-between">
-                  <span> {car.name}</span>
-                  <span>{car.price}</span>
-                </h1>
-                <h3 className=" ml-2 mx-2 font-bold flex justify-between">
-                  <span>{car.condition}</span>
-                  <span>{car.type}</span>
-                </h3>
-                <button className="w-full border border-green-500 p-2 hover:bg-green-500 hover:text-white cursor-pointer">
-                  Edit
-                </button>
-
-                <button
-                  onClick={() => handleDeleteCar(car._id)}
-                  className="w-full border border-red-500 mt-2 p-2 hover:bg-red-500 hover:text-white cursor-pointer"
+        <>
+          {Array.isArray(carList) && carList.length > 0 ? (
+            <div className="grid lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 justify-center items-center gap-4">
+              {carList.map((car) => (
+                <div
+                  key={car._id}
+                  className="w-full shadow-lg rounded-xl bg-gray-100 space-x-2 p-4 hover:bg-gray-600 cursor-pointer"
                 >
-                  Delete
-                </button>
-              </div>
-            );
-          })}
+                  <Link to={`/car_details/${car._id}`}>
+                    <img
+                      className="h-52 w-full"
+                      src={car?.images?.[0] || ""}
+                      alt={car?.name || "Car"}
+                    />
+                  </Link>
+                  <h1 className=" ml-2 mx-2 font-bold text-green-700 flex justify-between">
+                    <span> {car.name}</span>
+                    <span>{car.price}</span>
+                  </h1>
+                  <h3 className=" ml-2 mx-2 font-bold flex justify-between">
+                    <span>{car.condition}</span>
+                    <span>{car.type}</span>
+                  </h3>
+                  <button className="w-full border border-green-500 p-2 hover:bg-green-500 hover:text-white cursor-pointer">
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDeleteCar(car._id)}
+                    className="w-full border border-red-500 mt-2 p-2 hover:bg-red-500 hover:text-white cursor-pointer"
+                  >
+                    Delete
+                  </button>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div>
+              <p className="text-green-500 text-center text-4xl">
+                No Car available for this Seller
+              </p>
+            </div>
+          )}
+        </>
       </div>
     </div>
   );

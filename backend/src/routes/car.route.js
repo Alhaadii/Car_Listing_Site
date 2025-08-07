@@ -2,6 +2,7 @@ import { Router } from "express";
 import {
   createCarList,
   deleteCar,
+  getAllCars,
   getCarList,
   getSingleCar,
   UpdateCar,
@@ -9,14 +10,10 @@ import {
 import { verifyToken } from "../utils/verifyToken.js";
 const router = new Router();
 
-router.get("/", (req, res) => {
-  res.status(200).json({
-    Message: "welcome",
-  });
-});
+router.get("/all", getAllCars);
 router.post("/create", createCarList);
 router.get("/list/:id", verifyToken, getCarList);
 router.get("/:id", verifyToken, getSingleCar);
 router.delete("/delete/:id", verifyToken, deleteCar);
-router.put("/update/:id",verifyToken, UpdateCar)
+router.put("/update/:id", verifyToken, UpdateCar);
 export default router;

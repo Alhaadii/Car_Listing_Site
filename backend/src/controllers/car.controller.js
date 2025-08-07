@@ -164,3 +164,71 @@ export const UpdateCar = async (req, res) => {
     });
   }
 };
+
+// get All listings
+
+export const getAllCars = async (req, res) => {
+  try {
+    const limit = parseInt(req.query.limit) || 10;
+    const startIndex = parseInt(req.query.startIndex) || 0;
+
+    let offer = req.query.offer;
+    if (offer === "undefined" || offer === undefined) {
+      offer = { $in: [false, true] };
+    }
+
+    let type = req.query.type;
+    if (type === "undefined" || type === undefined) {
+      type = { $in: ["Rent", "Sale"] };
+    }
+
+    let transmission = req.query.transmission;
+    if (transmission === "undefined" || transmission === undefined) {
+      transmission = { $in: ["Automatic", "Manual", "CVT"] };
+    }
+
+    let condition = req.query.condition;
+    if (condition === "undefined" || condition === undefined) {
+      condition = { $in: ["New", "Used"] };
+    }
+
+    let fuelType = req.query.fuelType;
+    if (fuelType === "undefined" || fuelType === undefined) {
+      fuelType = { $in: ["Petrol", "Diesel", "Electric", "Hybrid"] };
+    }
+
+    const search = req.query.search || "";
+    const sort = req.query.sort || "createdAt";
+    const sortOrder = req.query.sortOrder === "desc" ? -1 : 1;
+
+    const carListings = await Car.find({
+      offer,
+      type,
+      transmission,
+      condition,
+      fuelType,
+      $or: [
+        { name: { $regex: search, $options: "i" } },
+        { make: { $regex: search, $options: "i" } },
+        { model: { $regex: search, $options: "i" } },
+        { location: { $regex: search, $options: "i" } },
+        { description: { $regex: search, $options: "i" } },
+      ],
+    })
+      .sort({ [sort]: sortOrder })
+      .skip(startIndex)
+      .limit(limit);
+
+    return res.status(200).json({
+      status: true,
+      message: "All car listings fetched successfully",
+      carListings,
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: false,
+      message: "Error fetching all car listings",
+      error: error.message,
+    });
+  }
+};

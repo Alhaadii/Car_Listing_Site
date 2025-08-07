@@ -65,3 +65,22 @@ export const deleteUserProfile = async (req, res, next) => {
     return next(errorHandler(500, `${error.message}`));
   }
 };
+
+export const getUserSeller = async (req, res) => {
+  try {
+    const userId = req.params.sellerId;
+    const userDetails = await User.findById(userId).select("-password");
+    if (!userDetails) {
+      return res.status(404).json({
+        status: false,
+        message: "Seller not found",
+      });
+    }
+    return res.status(200).json({
+      status: true,
+      seller: userDetails,
+    });
+  } catch (error) {
+    return next(errorHandler(500, `${error.message}`));
+  }
+};
