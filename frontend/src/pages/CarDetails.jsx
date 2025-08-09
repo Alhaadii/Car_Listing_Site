@@ -6,6 +6,7 @@ import SwiperCore from "swiper";
 import { Navigation } from "swiper/modules";
 import "swiper/css/bundle";
 import { useAppContext } from "../context/AppContext";
+import { FaShare } from "react-icons/fa";
 
 SwiperCore.use([Navigation]);
 
@@ -75,7 +76,16 @@ const CarDetails = () => {
         <p className="text-red-500 text-center">{error}</p>
       ) : carDetails ? (
         <>
-          <h2 className="text-3xl font-bold mb-4">{carDetails.name}</h2>
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-3xl font-bold mb-4">{carDetails.name}</h2>
+            <FaShare
+              onClick={() => {
+                navigator.clipboard.writeText(window.location.href);
+                toast.success("Car details link copied to clipboard!");
+              }}
+              className="ml-2 cursor-pointer w-14 h-14 text-white bg-gray-500 rounded-full p-4 text-2xl"
+            />
+          </div>
 
           {/* Swiper for car images */}
           {carDetails.images && carDetails.images.length > 0 && (

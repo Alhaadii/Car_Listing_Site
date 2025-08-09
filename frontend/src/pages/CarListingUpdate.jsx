@@ -1,8 +1,11 @@
-import { use, useRef, useState } from "react";
+import { use, useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { useAppContext } from "../context/AppContext";
+import { useNavigate, useParams } from "react-router-dom";
 
-const CarListing = () => {
+const CarListingUpdate = () => {
+  const navigate = useNavigate();
+  const params = useParams();
   const clearRefFiles = useRef(null);
   const { currentUser, error, setError, loading, setLoading } = useAppContext();
   const { user } = currentUser || {};
@@ -32,7 +35,6 @@ const CarListing = () => {
   // file change function handler
   const handleFileChange = (e) => {
     const selectedFiles = Array.from(e.target.files);
-    console.log(selectedFiles.length + files.length);
     if (files.length + selectedFiles.length > 6) {
       toast.error("You can only upload a maximum of 6 images.");
       setImageUploadError("You can only upload a maximum of 6 images.");
@@ -68,7 +70,6 @@ const CarListing = () => {
 
   // Uploading Multiple images
   const uploadMultipleImagesFun = async () => {
-    console.log(files.length);
     if (files.length === 0) {
       toast.error("Please select images to upload.");
       return;
@@ -163,22 +164,23 @@ const CarListing = () => {
     // Submit form data
     try {
       setLoading(true);
-      const response = await fetch("/api/car/create", {
-        method: "POST",
+      const response = await fetch(`/api/car/update/${params.carId}`, {
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(carDetails),
       });
       if (!response.ok) {
-        toast.error("Failed to create car listing.");
+        toast.error("Failed to update car listing.");
         setLoading(false);
-        throw new Error("Failed to create car listing.");
+        throw new Error("Failed to update car listing.");
       }
-      toast.success("Car listing created successfully!");
+      toast.success("Car listing updated successfully!");
       setTimeout(() => {
         clearAll();
       }, 1000);
+      navigate("/seller-home");
     } catch (error) {
       toast.error(error.message);
       setError(error.message);
@@ -186,6 +188,30 @@ const CarListing = () => {
       setLoading(false);
     }
   };
+
+  //   get_The car details from params
+  const getCarDetails = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(`/api/car/${params.carId}`);
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to fetch car details");
+      }
+
+      setCarDetails(data.car);
+      setImageUrls(data.car.images || []);
+    } catch (error) {
+      setError(`ERROR: ${error.message}`);
+      toast.error(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
+    getCarDetails();
+  }, [params.carId]);
 
   // clear handler
   const clearAll = () => {
@@ -218,7 +244,7 @@ const CarListing = () => {
   return (
     <main className="p-3 max-w-4xl mx-auto">
       <h1 className="text-center font-semibold text-3xl my-7">
-        Create Car Listing
+        Update Car Listing
       </h1>
       <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-4">
         {/* Left Side Form */}
@@ -493,7 +519,7 @@ const CarListing = () => {
             type="submit"
             className="w-full uppercase text-white bg-green-600 mt-4 rounded-md p-3 hover:shadow-lg cursor-pointer transition-colors duration-300 disabled:opacity-95"
           >
-            Create Car Listing
+            Update Car Listing
           </button>
         </div>
       </form>
@@ -501,4 +527,4 @@ const CarListing = () => {
   );
 };
 
-export default CarListing;
+export default CarListingUpdate;
