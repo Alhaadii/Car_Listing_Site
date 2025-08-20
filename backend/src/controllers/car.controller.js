@@ -173,33 +173,45 @@ export const getAllCars = async (req, res) => {
     const startIndex = parseInt(req.query.startIndex) || 0;
 
     let offer = req.query.offer;
-    if (offer === "undefined" || offer === undefined) {
+    if (offer === "undefined" || offer === undefined || offer === null) {
       offer = { $in: [false, true] };
     }
 
     let type = req.query.type;
-    if (type === "undefined" || type === undefined) {
+    if (type === "undefined" || type === undefined || type === "all") {
       type = { $in: ["Rent", "Sale"] };
     }
 
     let transmission = req.query.transmission;
-    if (transmission === "undefined" || transmission === undefined) {
+    if (
+      transmission === "undefined" ||
+      transmission === undefined ||
+      transmission === "all"
+    ) {
       transmission = { $in: ["Automatic", "Manual", "CVT"] };
     }
 
     let condition = req.query.condition;
-    if (condition === "undefined" || condition === undefined) {
+    if (
+      condition === "undefined" ||
+      condition === undefined ||
+      condition === "all"
+    ) {
       condition = { $in: ["New", "Used"] };
     }
 
     let fuelType = req.query.fuelType;
-    if (fuelType === "undefined" || fuelType === undefined) {
+    if (
+      fuelType === "undefined" ||
+      fuelType === undefined ||
+      fuelType === "all"
+    ) {
       fuelType = { $in: ["Petrol", "Diesel", "Electric", "Hybrid"] };
     }
 
-    const search = req.query.search || "";
+    const searchTerm = req.query.searchTerm || "";
     const sort = req.query.sort || "createdAt";
-    const sortOrder = req.query.sortOrder === "desc" ? -1 : 1;
+    const order = req.query.order === "desc" ? -1 : 1;
 
     const carListings = await Car.find({
       offer,
@@ -208,14 +220,14 @@ export const getAllCars = async (req, res) => {
       condition,
       fuelType,
       $or: [
-        { name: { $regex: search, $options: "i" } },
-        { make: { $regex: search, $options: "i" } },
-        { model: { $regex: search, $options: "i" } },
-        { location: { $regex: search, $options: "i" } },
-        { description: { $regex: search, $options: "i" } },
+        { name: { $regex: searchTerm, $options: "i" } },
+        { make: { $regex: searchTerm, $options: "i" } },
+        { model: { $regex: searchTerm, $options: "i" } },
+        { location: { $regex: searchTerm, $options: "i" } },
+        { description: { $regex: searchTerm, $options: "i" } },
       ],
     })
-      .sort({ [sort]: sortOrder })
+      .sort({ [sort]: order })
       .skip(startIndex)
       .limit(limit);
 

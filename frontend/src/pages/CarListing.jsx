@@ -145,7 +145,6 @@ const CarListing = () => {
       !carDetails.make ||
       !carDetails.model ||
       !carDetails.year ||
-      !carDetails.mileage ||
       !carDetails.fuelType
     ) {
       setError("Please fill in all required fields.");
@@ -291,7 +290,6 @@ const CarListing = () => {
           <div className="mb-4  bg-white">
             <input
               id="mileage"
-              required
               name="mileage"
               onChange={handleChange}
               defaultValue={carDetails.mileage}
