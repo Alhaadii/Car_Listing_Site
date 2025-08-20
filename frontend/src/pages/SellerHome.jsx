@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useAppContext } from "../context/AppContext";
 import { toast } from "react-toastify";
 import { HashLoader } from "react-spinners";
@@ -18,13 +18,17 @@ const SellerHome = () => {
     try {
       setLoading(true);
       const response = await fetch(`/api/car/list/${user._id}`);
+      const contentType = response.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        throw new Error("Server returned an unexpected response format.");
+      }
       const data = await response.json();
       const cars = data.car;
       setCarList(cars);
       setLoading(false);
     } catch (error) {
       setError(`ERROR: ${error.message}`);
-      toast.error(error);
+      toast.error(error.message || error);
     }
   };
 
